@@ -68,7 +68,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             
-            when (val result = authRepository.login(state.username, state.password)) {
+            when (val result = authRepository.login(state.email, state.password)) {
                 is AuthResult.Success -> {
                     state = state.copy(isLoading = false)
                     _uiEvent.emit(AuthUiEvent.LoginSuccess)
@@ -111,8 +111,12 @@ class AuthViewModel @Inject constructor(
     }
     
     private fun validateLoginInput(): Boolean {
-        if (state.username.isBlank()) {
-            state = state.copy(error = "Username cannot be empty")
+        if (state.email.isBlank()) {
+            state = state.copy(error = "Email cannot be empty")
+            return false
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
+            state = state.copy(error = "Invalid email format")
             return false
         }
         if (state.password.isBlank()) {

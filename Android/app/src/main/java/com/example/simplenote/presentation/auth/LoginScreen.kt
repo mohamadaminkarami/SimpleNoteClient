@@ -106,8 +106,8 @@ fun LoginScreen(
 
         // Email Address Field
         OutlinedTextField(
-            value = state.username,
-            onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
+            value = state.email,
+            onValueChange = { viewModel.onEvent(AuthEvent.EmailChanged(it)) },
             label = {
                 Text(
                     text = "Email Address",
