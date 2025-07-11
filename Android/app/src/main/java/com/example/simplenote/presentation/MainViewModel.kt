@@ -6,13 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplenote.domain.repository.AuthRepository
+import com.example.simplenote.data.preferences.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
     
     var state by mutableStateOf(MainState())
@@ -20,6 +22,7 @@ class MainViewModel @Inject constructor(
     
     init {
         checkAuthStatus()
+        checkOnboardingStatus()
     }
     
     private fun checkAuthStatus() {
@@ -33,6 +36,19 @@ class MainViewModel @Inject constructor(
         }
     }
     
+    private fun checkOnboardingStatus() {
+        state = state.copy(
+            isOnboardingCompleted = preferencesManager.isOnboardingCompleted()
+        )
+    }
+    
+    fun completeOnboarding() {
+        preferencesManager.setOnboardingCompleted()
+        state = state.copy(
+            isOnboardingCompleted = true
+        )
+    }
+    
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
@@ -42,5 +58,6 @@ class MainViewModel @Inject constructor(
 
 data class MainState(
     val isLoggedIn: Boolean = false,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isOnboardingCompleted: Boolean = false
 ) 
