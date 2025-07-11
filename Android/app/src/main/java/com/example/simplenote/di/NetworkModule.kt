@@ -1,11 +1,15 @@
 package com.example.simplenote.di
 
+import android.content.Context
 import com.example.simplenote.data.network.AuthApiService
+import com.example.simplenote.data.network.AuthInterceptor
 import com.example.simplenote.data.network.NotesApiService
+import com.example.simplenote.data.preferences.AuthPreferences
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -32,13 +36,26 @@ object NetworkModule {
     
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideAuthPreferences(@ApplicationContext context: Context): AuthPreferences {
+        return AuthPreferences(context)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(authPreferences: AuthPreferences): AuthInterceptor {
+        return AuthInterceptor(authPreferences)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 }
             )
+            .addInterceptor(authInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
