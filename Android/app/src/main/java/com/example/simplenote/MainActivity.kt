@@ -9,11 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.simplenote.presentation.MainViewModel
 import com.example.simplenote.presentation.auth.LoginScreen
 import com.example.simplenote.presentation.auth.RegisterScreen
@@ -107,15 +110,74 @@ fun SimpleNoteApp(
         // Main app screens
         composable(Screen.NotesList.route) {
             NotesListScreen(
-                onLogout = {
-                    viewModel.logout()
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.NotesList.route) {
-                            inclusive = true
-                        }
-                    }
+                onNavigateToNoteDetail = { noteId ->
+                    navController.navigate(Screen.NoteDetail.createRoute(noteId))
+                },
+                onNavigateToNoteEditor = { noteId ->
+                    navController.navigate(Screen.NoteEditor.createRoute(noteId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
                 }
             )
+        }
+        
+        // TODO: Add these screen implementations later
+        composable(
+            route = Screen.NoteDetail.route,
+            arguments = listOf(
+                navArgument("noteId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getInt("noteId") ?: 0
+            // TODO: Implement NoteDetailScreen
+            Text("Note Detail Screen - Note ID: $noteId")
+        }
+        
+        composable(
+            route = Screen.NoteEditor.route,
+            arguments = listOf(
+                navArgument("noteId") { 
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getInt("noteId")?.takeIf { it != -1 }
+            // TODO: Implement NoteEditorScreen
+            Text("Note Editor Screen - Note ID: ${noteId ?: "New Note"}")
+        }
+        
+        composable(Screen.Profile.route) {
+            // TODO: Implement ProfileScreen with proper logout
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Profile Screen",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Button(
+                    onClick = {
+                        viewModel.logout()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.NotesList.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                ) {
+                    Text("Logout")
+                }
+            }
         }
     }
 }

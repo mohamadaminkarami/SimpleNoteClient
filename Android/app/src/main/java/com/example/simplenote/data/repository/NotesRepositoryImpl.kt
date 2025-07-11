@@ -43,9 +43,9 @@ class NotesRepositoryImpl @Inject constructor(
                 val tempNote = Note(
                     id = 0, // Room will auto-generate
                     title = title,
-                    content = content,
-                    created = getCurrentTimestamp(),
-                    updated = getCurrentTimestamp()
+                    description = content,
+                    createdAt = getCurrentTimestamp(),
+                    updatedAt = getCurrentTimestamp()
                 )
                 noteDao.insertNote(tempNote)
                 NoteResult.Success
@@ -55,9 +55,9 @@ class NotesRepositoryImpl @Inject constructor(
             val tempNote = Note(
                 id = 0,
                 title = title,
-                content = content,
-                created = getCurrentTimestamp(),
-                updated = getCurrentTimestamp()
+                description = content,
+                createdAt = getCurrentTimestamp(),
+                updatedAt = getCurrentTimestamp()
             )
             noteDao.insertNote(tempNote)
             NoteResult.Success
@@ -82,8 +82,8 @@ class NotesRepositoryImpl @Inject constructor(
                 if (existingNote != null) {
                     val updatedNote = existingNote.copy(
                         title = title,
-                        content = content,
-                        updated = getCurrentTimestamp()
+                        description = content,
+                        updatedAt = getCurrentTimestamp()
                     )
                     noteDao.updateNote(updatedNote)
                     NoteResult.Success
@@ -97,8 +97,8 @@ class NotesRepositoryImpl @Inject constructor(
             if (existingNote != null) {
                 val updatedNote = existingNote.copy(
                     title = title,
-                    content = content,
-                    updated = getCurrentTimestamp()
+                    description = content,
+                    updatedAt = getCurrentTimestamp()
                 )
                 noteDao.updateNote(updatedNote)
                 NoteResult.Success

@@ -13,7 +13,7 @@ data class PaginatedResponse<T>(
 @Serializable
 data class NoteRequest(
     val title: String,
-    val content: String
+    val description: String
 )
 
 @Serializable
