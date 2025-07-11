@@ -7,6 +7,7 @@ import com.example.simplenote.data.preferences.AuthPreferences
 import com.example.simplenote.domain.repository.AuthRepository
 import com.example.simplenote.util.AuthResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -75,21 +76,25 @@ class AuthRepositoryImpl @Inject constructor(
     
     override suspend fun refreshToken(): AuthResult {
         return try {
-            val refreshToken = authPreferences.refreshToken
-            refreshToken.collect { token ->
-                if (token != null) {
-                    val response = authApiService.refreshToken(RefreshTokenRequest(token))
-                    
-                    if (response.isSuccessful) {
-                        val refreshResponse = response.body()
-                        if (refreshResponse != null) {
-                            // Update only access token, keep refresh token
-                            authPreferences.saveTokens(refreshResponse.access, token)
-                        }
+            val refreshToken = authPreferences.refreshToken.first()
+            if (refreshToken != null) {
+                val response = authApiService.refreshToken(RefreshTokenRequest(refreshToken))
+                
+                if (response.isSuccessful) {
+                    val refreshResponse = response.body()
+                    if (refreshResponse != null) {
+                        // Update only access token, keep refresh token
+                        authPreferences.saveTokens(refreshResponse.access, refreshToken)
+                        AuthResult.Success
+                    } else {
+                        AuthResult.Error("Token refresh failed: Empty response")
                     }
+                } else {
+                    AuthResult.Error("Token refresh failed: ${response.message()}")
                 }
+            } else {
+                AuthResult.Error("No refresh token available")
             }
-            AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error("Token refresh failed: ${e.localizedMessage}")
         }
