@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.simplenote.ui.theme.LoginTextPrimary
 import com.example.simplenote.ui.theme.LoginTextSecondary
 import com.example.simplenote.ui.theme.LoginPlaceholder
+import com.example.simplenote.ui.theme.OnboardingPurple
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +39,7 @@ fun LoginScreen(
 ) {
     val state = viewModel.state
     val focusManager = LocalFocusManager.current
-    
+
     // Handle UI events
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -46,13 +47,14 @@ fun LoginScreen(
                 is AuthUiEvent.LoginSuccess -> {
                     onLoginSuccess()
                 }
+
                 is AuthUiEvent.RegisterSuccess -> {
                     // Not applicable for login screen
                 }
             }
         }
     }
-    
+
     // Show error snackbar
     if (state.error != null) {
         LaunchedEffect(state.error) {
@@ -61,7 +63,7 @@ fun LoginScreen(
             viewModel.onEvent(AuthEvent.ClearError)
         }
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,9 +85,9 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // Subtitle
         Text(
             text = "And notes your idea",
@@ -99,14 +101,14 @@ fun LoginScreen(
             textAlign = TextAlign.Start,
             modifier = Modifier.fillMaxWidth()
         )
-        
+
         Spacer(modifier = Modifier.height(40.dp))
-        
+
         // Email Address Field
         OutlinedTextField(
             value = state.username,
             onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
-            label = { 
+            label = {
                 Text(
                     text = "Email Address",
                     style = androidx.compose.ui.text.TextStyle(
@@ -118,7 +120,7 @@ fun LoginScreen(
                     color = LoginTextPrimary
                 )
             },
-            placeholder = { 
+            placeholder = {
                 Text(
                     text = "Example: johndoe@gmail.com",
                     style = androidx.compose.ui.text.TextStyle(
@@ -142,14 +144,14 @@ fun LoginScreen(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Password Field
         OutlinedTextField(
             value = state.password,
             onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
-            label = { 
+            label = {
                 Text(
                     text = "Password",
                     style = androidx.compose.ui.text.TextStyle(
@@ -161,7 +163,7 @@ fun LoginScreen(
                     color = LoginTextPrimary
                 )
             },
-            placeholder = { 
+            placeholder = {
                 Text(
                     text = "••••••••",
                     style = androidx.compose.ui.text.TextStyle(
@@ -205,15 +207,15 @@ fun LoginScreen(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { 
+                onDone = {
                     focusManager.clearFocus()
                     viewModel.onEvent(AuthEvent.Login)
                 }
             )
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         // Login Button
         Button(
             onClick = { viewModel.onEvent(AuthEvent.Login) },
@@ -221,9 +223,10 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(50.dp),
             enabled = !state.isLoading,
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(100.dp),
+
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = OnboardingPurple,
                 contentColor = Color.White
             )
         ) {
@@ -242,9 +245,9 @@ fun LoginScreen(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Divider
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -259,9 +262,9 @@ fun LoginScreen(
             )
             Divider(modifier = Modifier.weight(1f))
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Register Link
         TextButton(
             onClick = onNavigateToRegister,
@@ -269,15 +272,17 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Don't have any account? Register here",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyMedium
+                color = OnboardingPurple,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp
+                ),
             )
         }
-        
+
         // Error Message
         if (state.error != null) {
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
