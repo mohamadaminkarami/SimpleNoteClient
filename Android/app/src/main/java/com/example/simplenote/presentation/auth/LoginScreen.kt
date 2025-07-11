@@ -2,6 +2,7 @@ package com.example.simplenote.presentation.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,35 +67,41 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // App Title
+        // Main Title
         Text(
-            text = "SimpleNote",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            text = "Let's Login",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurface
         )
         
         Spacer(modifier = Modifier.height(8.dp))
         
+        // Subtitle
         Text(
-            text = "Welcome back!",
-            style = MaterialTheme.typography.bodyLarge,
+            text = "And notes your idea",
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 16.sp
+            ),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         
-        // Username Field
+        // Email Address Field
         OutlinedTextField(
             value = state.username,
             onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
-            label = { Text("Username") },
-            placeholder = { Text("Enter your username") },
+            label = { Text("Email Address") },
+            placeholder = { Text("Example: john@example.com") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
@@ -107,10 +116,11 @@ fun LoginScreen(
             value = state.password,
             onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
             label = { Text("Password") },
-            placeholder = { Text("Enter your password") },
+            placeholder = { Text("••••••••") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             visualTransformation = if (state.isPasswordVisible) {
                 VisualTransformation.None
             } else {
@@ -146,33 +156,66 @@ fun LoginScreen(
             )
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         // Login Button
         Button(
             onClick = { viewModel.onEvent(AuthEvent.Login) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             } else {
-                Text("Log In")
+                Text(
+                    text = "Login",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Divider
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Divider(modifier = Modifier.weight(1f))
+            Text(
+                text = "Or",
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Divider(modifier = Modifier.weight(1f))
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
         
         // Register Link
         TextButton(
             onClick = onNavigateToRegister,
             enabled = !state.isLoading
         ) {
-            Text("Don't have an account? Sign up")
+            Text(
+                text = "Don't have any account? Register here",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
         
         // Error Message
@@ -183,7 +226,8 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = state.error,

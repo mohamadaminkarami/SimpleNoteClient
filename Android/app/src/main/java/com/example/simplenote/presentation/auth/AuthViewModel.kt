@@ -26,6 +26,12 @@ class AuthViewModel @Inject constructor(
     
     fun onEvent(event: AuthEvent) {
         when (event) {
+            is AuthEvent.FirstNameChanged -> {
+                state = state.copy(firstName = event.firstName)
+            }
+            is AuthEvent.LastNameChanged -> {
+                state = state.copy(lastName = event.lastName)
+            }
             is AuthEvent.UsernameChanged -> {
                 state = state.copy(username = event.username)
             }
@@ -86,7 +92,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             
-            when (val result = authRepository.register(state.username, state.email, state.password)) {
+            when (val result = authRepository.register(state.firstName, state.lastName, state.username, state.email, state.password)) {
                 is AuthResult.Success -> {
                     state = state.copy(isLoading = false)
                     _uiEvent.emit(AuthUiEvent.RegisterSuccess)
@@ -117,6 +123,14 @@ class AuthViewModel @Inject constructor(
     }
     
     private fun validateRegisterInput(): Boolean {
+        if (state.firstName.isBlank()) {
+            state = state.copy(error = "First name cannot be empty")
+            return false
+        }
+        if (state.lastName.isBlank()) {
+            state = state.copy(error = "Last name cannot be empty")
+            return false
+        }
         if (state.username.isBlank()) {
             state = state.copy(error = "Username cannot be empty")
             return false
@@ -146,6 +160,8 @@ class AuthViewModel @Inject constructor(
 }
 
 data class AuthState(
+    val firstName: String = "",
+    val lastName: String = "",
     val username: String = "",
     val email: String = "",
     val password: String = "",
@@ -157,6 +173,8 @@ data class AuthState(
 )
 
 sealed class AuthEvent {
+    data class FirstNameChanged(val firstName: String) : AuthEvent()
+    data class LastNameChanged(val lastName: String) : AuthEvent()
     data class UsernameChanged(val username: String) : AuthEvent()
     data class EmailChanged(val email: String) : AuthEvent()
     data class PasswordChanged(val password: String) : AuthEvent()

@@ -2,6 +2,7 @@ package com.example.simplenote.presentation.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,12 +65,13 @@ fun RegisterScreen(
             .fillMaxSize()
             .padding(24.dp)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Back button and title
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -76,41 +80,98 @@ fun RegisterScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back to Login"
                 )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
             Text(
-                text = "Create Account",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
+                text = "Back to Login",
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
         }
         
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Main Title
+        Text(
+            text = "Register",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.fillMaxWidth()
+        )
+        
         Spacer(modifier = Modifier.height(8.dp))
         
+        // Subtitle
         Text(
-            text = "Join SimpleNote today!",
-            style = MaterialTheme.typography.bodyLarge,
+            text = "And start taking notes",
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 16.sp
+            ),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
+            modifier = Modifier.fillMaxWidth()
         )
         
         Spacer(modifier = Modifier.height(32.dp))
+        
+        // First Name Field
+        OutlinedTextField(
+            value = state.firstName,
+            onValueChange = { viewModel.onEvent(AuthEvent.FirstNameChanged(it)) },
+            label = { Text("First Name") },
+            placeholder = { Text("Example: John") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Last Name Field
+        OutlinedTextField(
+            value = state.lastName,
+            onValueChange = { viewModel.onEvent(AuthEvent.LastNameChanged(it)) },
+            label = { Text("Last Name") },
+            placeholder = { Text("Example: Doe") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
         
         // Username Field
         OutlinedTextField(
             value = state.username,
             onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
             label = { Text("Username") },
-            placeholder = { Text("Choose a username") },
+            placeholder = { Text("Example: @johndoe") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -126,11 +187,12 @@ fun RegisterScreen(
         OutlinedTextField(
             value = state.email,
             onValueChange = { viewModel.onEvent(AuthEvent.EmailChanged(it)) },
-            label = { Text("Email") },
-            placeholder = { Text("Enter your email") },
+            label = { Text("Email Address") },
+            placeholder = { Text("Example: john@example.com") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -147,10 +209,11 @@ fun RegisterScreen(
             value = state.password,
             onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
             label = { Text("Password") },
-            placeholder = { Text("Create a password") },
+            placeholder = { Text("••••••••") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             visualTransformation = if (state.isPasswordVisible) {
                 VisualTransformation.None
             } else {
@@ -189,11 +252,12 @@ fun RegisterScreen(
         OutlinedTextField(
             value = state.confirmPassword,
             onValueChange = { viewModel.onEvent(AuthEvent.ConfirmPasswordChanged(it)) },
-            label = { Text("Confirm Password") },
-            placeholder = { Text("Confirm your password") },
+            label = { Text("Retype Password") },
+            placeholder = { Text("••••••••") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
             visualTransformation = if (state.isConfirmPasswordVisible) {
                 VisualTransformation.None
             } else {
@@ -229,43 +293,49 @@ fun RegisterScreen(
             )
         )
         
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Password hint
-        Text(
-            text = "Password must be at least 8 characters",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         // Register Button
         Button(
             onClick = { viewModel.onEvent(AuthEvent.Register) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            enabled = !state.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             } else {
-                Text("Sign Up")
+                Text(
+                    text = "Register",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         // Login Link
         TextButton(
             onClick = onNavigateBack,
             enabled = !state.isLoading
         ) {
-            Text("Already have an account? Log in")
+            Text(
+                text = "Already have an account? Login here",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
         
         // Error Message
@@ -276,7 +346,8 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = state.error,

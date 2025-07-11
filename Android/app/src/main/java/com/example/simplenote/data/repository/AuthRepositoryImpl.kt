@@ -48,10 +48,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
     
-    override suspend fun register(username: String, email: String, password: String): AuthResult {
+    override suspend fun register(firstName: String, lastName: String, username: String, email: String, password: String): AuthResult {
         return try {
             val response = authApiService.register(
-                RegisterRequest(username, email, password)
+                RegisterRequest(username, email, password, firstName, lastName)
             )
             
             if (response.isSuccessful) {
