@@ -23,7 +23,9 @@ import java.util.concurrent.TimeUnit
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     
-    private const val BASE_URL = "http://localhost:8000/api/"
+    // For Android emulator: 10.0.2.2 maps to host machine's localhost
+    // For physical device: use your machine's IP address (e.g., "http://192.168.1.100:8000/api/")
+    private const val BASE_URL = "http://10.0.2.2:8000/api/"
     
     @Provides
     @Singleton
