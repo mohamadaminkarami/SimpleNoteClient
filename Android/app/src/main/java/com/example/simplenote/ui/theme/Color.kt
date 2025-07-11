@@ -19,3 +19,8 @@ val BackgroundLight = Color(0xFFFAFAFA)
 val TextGray = Color(0xFF6B7280)
 val TextDark = Color(0xFF1F2937)
 
+// Login screen specific colors
+val LoginTextPrimary = Color(0xFF180E25) // Main text color
+val LoginTextSecondary = Color(0xFF827D89) // Subtitle color  
+val LoginPlaceholder = Color(0xFFC8C5CB) // Placeholder text color
+

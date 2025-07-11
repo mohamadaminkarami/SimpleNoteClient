@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.simplenote.ui.theme.LoginTextPrimary
+import com.example.simplenote.ui.theme.LoginTextSecondary
+import com.example.simplenote.ui.theme.LoginPlaceholder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,11 +73,15 @@ fun LoginScreen(
         // Main Title
         Text(
             text = "Let's Login",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold, // 700
+                lineHeight = (32 * 1.2).sp, // 120% line height
+                letterSpacing = 0.sp
             ),
-            color = MaterialTheme.colorScheme.onSurface
+            color = LoginTextPrimary,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
         )
         
         Spacer(modifier = Modifier.height(8.dp))
@@ -82,10 +89,15 @@ fun LoginScreen(
         // Subtitle
         Text(
             text = "And notes your idea",
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 16.sp
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal, // 400
+                lineHeight = (16 * 1.4).sp, // 140% line height
+                letterSpacing = 0.sp
             ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = LoginTextSecondary,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.fillMaxWidth()
         )
         
         Spacer(modifier = Modifier.height(40.dp))
@@ -94,8 +106,30 @@ fun LoginScreen(
         OutlinedTextField(
             value = state.username,
             onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
-            label = { Text("Email Address") },
-            placeholder = { Text("Example: john@example.com") },
+            label = { 
+                Text(
+                    text = "Email Address",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium, // 500
+                        lineHeight = (16 * 1.4).sp, // 140% line height
+                        letterSpacing = 0.sp
+                    ),
+                    color = LoginTextPrimary
+                )
+            },
+            placeholder = { 
+                Text(
+                    text = "Example: johndoe@gmail.com",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal, // 400
+                        lineHeight = (16 * 1.4).sp, // 140% line height
+                        letterSpacing = 0.sp
+                    ),
+                    color = LoginPlaceholder
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,
@@ -115,8 +149,30 @@ fun LoginScreen(
         OutlinedTextField(
             value = state.password,
             onValueChange = { viewModel.onEvent(AuthEvent.PasswordChanged(it)) },
-            label = { Text("Password") },
-            placeholder = { Text("••••••••") },
+            label = { 
+                Text(
+                    text = "Password",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium, // 500
+                        lineHeight = (16 * 1.4).sp, // 140% line height
+                        letterSpacing = 0.sp
+                    ),
+                    color = LoginTextPrimary
+                )
+            },
+            placeholder = { 
+                Text(
+                    text = "••••••••",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal, // 400
+                        lineHeight = (16 * 1.4).sp, // 140% line height
+                        letterSpacing = 0.sp
+                    ),
+                    color = LoginPlaceholder
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !state.isLoading,

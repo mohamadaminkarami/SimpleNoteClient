@@ -1,5 +1,6 @@
 package com.example.simplenote.presentation.onboarding
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -37,25 +38,22 @@ fun OnboardingScreen(
         ) {
             // Status bar spacing
             Spacer(modifier = Modifier.height(60.dp))
-            
+
             // Illustration
             Box(
                 modifier = Modifier
                     .size(280.dp)
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Onboarding illustration
                 Image(
-                    painter = painterResource(id = R.drawable.onboarding_illustration),
+                    painter = painterResource(id = R.drawable.illustration),
                     contentDescription = "Onboarding Illustration",
                     modifier = Modifier.size(280.dp)
                 )
             }
-            
-            Spacer(modifier = Modifier.height(40.dp))
-            
-            // Main text
+
             Text(
                 text = "Jot Down anything you want to achieve, today or in the future",
                 style = androidx.compose.ui.text.TextStyle(
@@ -71,24 +69,23 @@ fun OnboardingScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
-            
-            Spacer(modifier = Modifier.height(60.dp))
-            
-            // Let's Get Started Button
+
+            Spacer(modifier = Modifier.height(300.dp))
+
             Button(
                 onClick = onGetStartedClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(28.dp),
+                border = BorderStroke(width = 1.dp, color = OnboardingPurple),
+                shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = OnboardingPurple
                 )
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                Box(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = "Let's Get Started",
@@ -96,21 +93,23 @@ fun OnboardingScreen(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp
                         ),
-                        color = OnboardingPurple
+                        color = OnboardingPurple,
+                        modifier = Modifier.align(Alignment.Center)
                     )
-                    
-                    Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
+                        contentDescription = "Next",
                         tint = OnboardingPurple,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 1.dp)
                     )
                 }
             }
-            
-            Spacer(modifier = Modifier.height(40.dp))
+
+            Spacer(modifier = Modifier.height(70.dp))
+
         }
     }
 } 
