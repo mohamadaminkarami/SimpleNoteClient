@@ -23,7 +23,8 @@ object DatabaseModule {
             context,
             SimpleNoteDatabase::class.java,
             SimpleNoteDatabase.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration()
+         .build()
     }
     
     @Provides

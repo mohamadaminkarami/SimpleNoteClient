@@ -22,6 +22,7 @@ import com.example.simplenote.presentation.auth.LoginScreen
 import com.example.simplenote.presentation.auth.RegisterScreen
 import com.example.simplenote.presentation.navigation.Screen
 import com.example.simplenote.presentation.notes.NotesListScreen
+import com.example.simplenote.presentation.notes.NoteDetailScreen
 import com.example.simplenote.ui.theme.SimpleNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -122,16 +123,20 @@ fun SimpleNoteApp(
             )
         }
         
-        // TODO: Add these screen implementations later
+        // Combined Note Detail/Editor screen
         composable(
             route = Screen.NoteDetail.route,
             arguments = listOf(
                 navArgument("noteId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val noteId = backStackEntry.arguments?.getInt("noteId") ?: 0
-            // TODO: Implement NoteDetailScreen
-            Text("Note Detail Screen - Note ID: $noteId")
+            val noteId = backStackEntry.arguments?.getInt("noteId")?.toString()
+            NoteDetailScreen(
+                noteId = noteId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         
         composable(
@@ -143,9 +148,13 @@ fun SimpleNoteApp(
                 }
             )
         ) { backStackEntry ->
-            val noteId = backStackEntry.arguments?.getInt("noteId")?.takeIf { it != -1 }
-            // TODO: Implement NoteEditorScreen
-            Text("Note Editor Screen - Note ID: ${noteId ?: "New Note"}")
+            val noteId = backStackEntry.arguments?.getInt("noteId")?.takeIf { it != -1 }?.toString()
+            NoteDetailScreen(
+                noteId = noteId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         
         composable(Screen.Profile.route) {

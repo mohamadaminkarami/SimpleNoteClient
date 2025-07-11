@@ -14,6 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,9 @@ class NotesViewModel @Inject constructor(
     
     var state by mutableStateOf(NotesState())
         private set
+    
+    private val _uiState = kotlinx.coroutines.flow.MutableStateFlow(NotesState())
+    val uiState = _uiState.asStateFlow()
     
     private val _uiEvent = MutableSharedFlow<NotesUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -39,19 +43,22 @@ class NotesViewModel @Inject constructor(
         when (event) {
             is NotesEvent.SearchQueryChanged -> {
                 state = state.copy(searchQuery = event.query)
+                _uiState.value = state
                 searchNotes(event.query)
             }
             is NotesEvent.RefreshNotes -> {
                 refreshNotes()
             }
             is NotesEvent.DeleteNote -> {
-                deleteNote(event.noteId)
+                deleteNoteInternal(event.noteId)
             }
             is NotesEvent.ClearError -> {
                 state = state.copy(error = null)
+                _uiState.value = state
             }
             is NotesEvent.ClearSearchQuery -> {
                 state = state.copy(searchQuery = "")
+                _uiState.value = state
                 observeNotes() // Show all notes again
             }
         }
@@ -64,6 +71,7 @@ class NotesViewModel @Inject constructor(
                     notes = notes,
                     isLoading = false
                 )
+                _uiState.value = state
             }
         }
     }
@@ -71,17 +79,20 @@ class NotesViewModel @Inject constructor(
     private fun loadNotes() {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
+            _uiState.value = state
             
             when (val result = notesRepository.refreshNotes()) {
                 is Resource.Success -> {
                     // Notes will be updated via observeNotes()
                     state = state.copy(isLoading = false)
+                    _uiState.value = state
                 }
                 is Resource.Error -> {
                     state = state.copy(
                         isLoading = false,
                         error = result.message
                     )
+                    _uiState.value = state
                 }
                 is Resource.Loading -> {
                     // Already handled
@@ -93,16 +104,19 @@ class NotesViewModel @Inject constructor(
     private fun refreshNotes() {
         viewModelScope.launch {
             state = state.copy(isRefreshing = true, error = null)
+            _uiState.value = state
             
             when (val result = notesRepository.refreshNotes()) {
                 is Resource.Success -> {
                     state = state.copy(isRefreshing = false)
+                    _uiState.value = state
                 }
                 is Resource.Error -> {
                     state = state.copy(
                         isRefreshing = false,
                         error = result.message
                     )
+                    _uiState.value = state
                 }
                 is Resource.Loading -> {
                     // Already handled
@@ -128,11 +142,12 @@ class NotesViewModel @Inject constructor(
                     notes = notes,
                     isLoading = false
                 )
+                _uiState.value = state
             }
         }
     }
     
-    private fun deleteNote(noteId: Int) {
+    private fun deleteNoteInternal(noteId: Int) {
         viewModelScope.launch {
             when (val result = notesRepository.deleteNote(noteId)) {
                 is NoteResult.Success -> {
@@ -140,12 +155,52 @@ class NotesViewModel @Inject constructor(
                 }
                 is NoteResult.Error -> {
                     state = state.copy(error = result.message)
+                    _uiState.value = state
                 }
                 is NoteResult.Loading -> {
                     // Handle if needed
                 }
             }
         }
+    }
+    
+    // Public methods for NoteDetailScreen
+    fun createNote(title: String, description: String) {
+        viewModelScope.launch {
+            when (val result = notesRepository.createNote(title, description)) {
+                is NoteResult.Success -> {
+                    _uiEvent.emit(NotesUiEvent.NoteCreated)
+                }
+                is NoteResult.Error -> {
+                    state = state.copy(error = result.message)
+                    _uiState.value = state
+                }
+                is NoteResult.Loading -> {
+                    // Handle if needed
+                }
+            }
+        }
+    }
+    
+    fun updateNote(note: Note) {
+        viewModelScope.launch {
+            when (val result = notesRepository.updateNote(note.id, note.title, note.description)) {
+                is NoteResult.Success -> {
+                    _uiEvent.emit(NotesUiEvent.NoteUpdated)
+                }
+                is NoteResult.Error -> {
+                    state = state.copy(error = result.message)
+                    _uiState.value = state
+                }
+                is NoteResult.Loading -> {
+                    // Handle if needed
+                }
+            }
+        }
+    }
+    
+    fun deleteNote(noteId: Int) {
+        deleteNoteInternal(noteId)
     }
 }
 
@@ -167,4 +222,6 @@ sealed class NotesEvent {
 
 sealed class NotesUiEvent {
     data object NoteDeleted : NotesUiEvent()
+    data object NoteCreated : NotesUiEvent()
+    data object NoteUpdated : NotesUiEvent()
 } 

@@ -9,7 +9,7 @@ import com.example.simplenote.data.model.User
 
 @Database(
     entities = [Note::class, User::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class SimpleNoteDatabase : RoomDatabase() {

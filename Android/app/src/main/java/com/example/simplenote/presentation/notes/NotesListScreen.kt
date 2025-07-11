@@ -40,6 +40,12 @@ fun NotesListScreen(
                 is NotesUiEvent.NoteDeleted -> {
                     // Could show a snackbar here
                 }
+                is NotesUiEvent.NoteCreated -> {
+                    // Could show a snackbar here
+                }
+                is NotesUiEvent.NoteUpdated -> {
+                    // Could show a snackbar here
+                }
             }
         }
     }
