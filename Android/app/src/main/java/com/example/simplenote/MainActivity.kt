@@ -23,6 +23,7 @@ import com.example.simplenote.presentation.auth.RegisterScreen
 import com.example.simplenote.presentation.navigation.Screen
 import com.example.simplenote.presentation.notes.NotesListScreen
 import com.example.simplenote.presentation.notes.NoteDetailScreen
+import com.example.simplenote.presentation.onboarding.OnboardingScreen
 import com.example.simplenote.ui.theme.SimpleNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,17 +67,32 @@ fun SimpleNoteApp(
         return
     }
     
-    // Determine start destination based on auth status
-    val startDestination = if (state.isLoggedIn) {
-        Screen.NotesList.route
-    } else {
-        Screen.Login.route
-    }
+    // Determine start destination - always show onboarding first
+    // In a real app, you might want to save this preference to skip onboarding for returning users
+    val startDestination = Screen.Onboarding.route
     
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+        // Onboarding screen
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onGetStartedClick = {
+                    val nextDestination = if (state.isLoggedIn) {
+                        Screen.NotesList.route
+                    } else {
+                        Screen.Login.route
+                    }
+                    navController.navigate(nextDestination) {
+                        popUpTo(Screen.Onboarding.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+        
         // Authentication screens
         composable(Screen.Login.route) {
             LoginScreen(

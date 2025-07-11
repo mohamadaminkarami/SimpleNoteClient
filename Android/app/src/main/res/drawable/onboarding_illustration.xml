@@ -1,0 +1,138 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="280"
+    android:viewportHeight="280">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.1"
+        android:pathData="M140,20 A120,120 0 1,1 140,260 A120,120 0 1,1 140,20" />
+    
+    <!-- Person sitting with laptop -->
+    <group>
+        <!-- Body -->
+        <path
+            android:fillColor="#DEDC52"
+            android:pathData="M120,150 L160,150 L160,200 L120,200 Z" />
+        
+        <!-- Head -->
+        <path
+            android:fillColor="#DEDC52"
+            android:pathData="M130,120 A15,15 0 1,1 150,120 A15,15 0 1,1 130,120" />
+        
+        <!-- Hair -->
+        <path
+            android:fillColor="#180E25"
+            android:pathData="M125,115 A20,20 0 1,1 155,115 A20,20 0 1,1 125,115" />
+        
+        <!-- Laptop -->
+        <path
+            android:fillColor="#F5F5F5"
+            android:strokeColor="#180E25"
+            android:strokeWidth="2"
+            android:pathData="M110,170 L170,170 L165,190 L115,190 Z" />
+        
+        <!-- Laptop screen -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#180E25"
+            android:strokeWidth="1"
+            android:pathData="M120,150 L160,150 L160,170 L120,170 Z" />
+    </group>
+    
+    <!-- Light bulb (idea) -->
+    <group>
+        <!-- Bulb -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#180E25"
+            android:strokeWidth="2"
+            android:pathData="M170,35 A10,10 0 1,1 180,35 A10,10 0 1,1 170,35" />
+        
+        <!-- Bulb base -->
+        <path
+            android:fillColor="#DEDC52"
+            android:pathData="M172,48 L178,48 L178,52 L172,52 Z" />
+        
+        <!-- Light rays -->
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M157,28 L162,30" />
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M165,20 L167,25" />
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M175,20 L173,25" />
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M188,28 L183,30" />
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M195,38 L190,38" />
+        <path
+            android:strokeColor="#180E25"
+            android:strokeWidth="1.5"
+            android:pathData="M155,38 L150,38" />
+    </group>
+    
+    <!-- Papers/Notes scattered around -->
+    <group>
+        <!-- Paper 1 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#180E25"
+            android:strokeWidth="1"
+            android:pathData="M80,180 L120,180 L120,220 L80,220 Z" />
+        
+        <!-- Paper 2 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#180E25"
+            android:strokeWidth="1"
+            android:pathData="M160,200 L200,200 L200,240 L160,240 Z" />
+        
+        <!-- Paper 3 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#180E25"
+            android:strokeWidth="1"
+            android:pathData="M60,220 L100,220 L100,250 L60,250 Z" />
+        
+        <!-- Lines on papers -->
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M85,190 L115,190" />
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M85,200 L110,200" />
+        
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M165,210 L195,210" />
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M165,220 L190,220" />
+        
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M65,230 L95,230" />
+        <path
+            android:strokeColor="#504EC3"
+            android:strokeWidth="1"
+            android:pathData="M65,240 L90,240" />
+    </group>
+    
+</vector>

@@ -14,6 +14,8 @@ val Pink40 = Color(0xFF7D5260)
 // Additional colors for the design
 val PrimaryBlue = Color(0xFF6366F1) // Purple-blue from design
 val SecondaryBlue = Color(0xFF8B5CF6) // Slightly different purple
+val OnboardingPurple = Color(0xFF504EC3) // Onboarding background color
 val BackgroundLight = Color(0xFFFAFAFA)
 val TextGray = Color(0xFF6B7280)
 val TextDark = Color(0xFF1F2937)
+
