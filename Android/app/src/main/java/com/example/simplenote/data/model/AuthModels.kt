@@ -31,4 +31,17 @@ data class RefreshTokenRequest(
 @Serializable
 data class TokenRefreshResponse(
     val access: String
+)
+
+// Change Password API
+
+@Serializable
+data class ChangePasswordRequest(
+    val old_password: String,
+    val new_password: String
+)
+
+@Serializable
+data class MessageResponse(
+    val detail: String
 ) 

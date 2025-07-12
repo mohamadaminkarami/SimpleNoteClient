@@ -231,7 +231,6 @@ fun SimpleNoteApp(
         composable(Screen.ChangePassword.route) {
             com.example.simplenote.presentation.notes.ChangePasswordScreen(
                 onBack = { navController.popBackStack() },
-                onSubmit = { current, new, retype -> /* TODO: Implement backend logic */ }
             )
         }
     }
