@@ -143,6 +143,9 @@ fun SimpleNoteApp(
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
         }
@@ -211,6 +214,14 @@ fun SimpleNoteApp(
                     Text("Logout")
                 }
             }
+        }
+
+        composable(Screen.Settings.route) {
+            com.example.simplenote.presentation.notes.SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onChangePassword = { /* TODO: Implement navigation to change password */ },
+                onLogout = { /* TODO: Implement logout */ }
+            )
         }
     }
 }

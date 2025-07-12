@@ -38,6 +38,7 @@ fun NotesListScreen(
     onNavigateToNoteDetail: (Int) -> Unit,
     onNavigateToNoteEditor: (Int?) -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -283,7 +284,7 @@ fun NotesListScreen(
                                 )
                             }
                             IconButton(
-                                onClick = { /* TODO: Settings action */ },
+                                onClick = onNavigateToSettings,
                                 modifier = Modifier.align(Alignment.BottomEnd)
                             ) {
                                 Icon(
