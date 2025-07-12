@@ -219,8 +219,14 @@ fun SimpleNoteApp(
         composable(Screen.Settings.route) {
             com.example.simplenote.presentation.notes.SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onChangePassword = { /* TODO: Implement navigation to change password */ },
+                onChangePassword = { navController.navigate(Screen.ChangePassword.route) },
                 onLogout = { /* TODO: Implement logout */ }
+            )
+        }
+        composable(Screen.ChangePassword.route) {
+            com.example.simplenote.presentation.notes.ChangePasswordScreen(
+                onBack = { navController.popBackStack() },
+                onSubmit = { current, new, retype -> /* TODO: Implement backend logic */ }
             )
         }
     }

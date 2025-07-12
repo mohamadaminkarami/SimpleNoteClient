@@ -9,6 +9,12 @@
 - UI matches the provided design.
 - (Change password and logout actions are placeholders for now.)
 
+### Change Password Screen
+- Accessed from the Settings screen.
+- Allows users to enter their current password, new password, and retype the new password.
+- UI matches the provided design.
+- (Backend logic for password change is not yet implemented.)
+
 ---
 
-For more details, see the code in `presentation/notes/SettingsScreen.kt` and navigation setup in `MainActivity.kt`. 
+For more details, see the code in `
