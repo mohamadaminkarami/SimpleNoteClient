@@ -1,5 +1,6 @@
 package com.example.simplenote.presentation.notes
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,8 +11,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.simplenote.presentation.notes.components.NoteCard
+import androidx.compose.ui.res.painterResource
+import com.example.simplenote.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,22 +111,6 @@ fun NotesListScreen(
                 )
             )
         },
-        floatingActionButton = {
-            if (!state.isLoading) {
-                FloatingActionButton(
-                    onClick = { onNavigateToNoteEditor(null) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White,
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add note",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -223,41 +212,86 @@ fun NotesListScreen(
                     }
                     
                     state.notes.isEmpty() -> {
-                        // Empty State
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = "No notes yet",
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
+                            // Illustration
+                            Image(
+                                painter = painterResource(id = R.drawable.illustration),
+                                contentDescription = "Start your journey illustration",
+                                modifier = Modifier.size(180.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(32.dp))
+                            // Title
                             Text(
-                                text = "Create your first note to get started",
+                                text = "Start Your Journey",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            // Subtitle
+                            Text(
+                                text = "Every big step start with small step.\nNotes your first idea and start your journey!",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(modifier = Modifier.height(32.dp))
-                            Button(
+                            Spacer(modifier = Modifier.height(48.dp))
+                            // Placeholder for curved arrow (optional)
+                        }
+                        // Large FAB at bottom center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 36.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            FloatingActionButton(
                                 onClick = { onNavigateToNoteEditor(null) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(12.dp)
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White,
+                                modifier = Modifier.size(72.dp),
+                                shape = CircleShape
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    contentDescription = "Add note",
+                                    modifier = Modifier.size(36.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Create Note")
+                            }
+                        }
+                        // Home and Settings buttons at bottom corners
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp)
+                        ) {
+                            IconButton(
+                                onClick = { /* TODO: Home action */ },
+                                modifier = Modifier.align(Alignment.BottomStart)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Home,
+                                    contentDescription = "Home",
+                                    modifier = Modifier.size(36.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            IconButton(
+                                onClick = { /* TODO: Settings action */ },
+                                modifier = Modifier.align(Alignment.BottomEnd)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings",
+                                    modifier = Modifier.size(36.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
                     }
