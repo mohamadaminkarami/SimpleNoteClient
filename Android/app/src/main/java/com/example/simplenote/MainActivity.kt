@@ -220,7 +220,12 @@ fun SimpleNoteApp(
             com.example.simplenote.presentation.notes.SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onChangePassword = { navController.navigate(Screen.ChangePassword.route) },
-                onLogout = { /* TODO: Implement logout */ }
+                onLogout = {
+                    viewModel.logout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.NotesList.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Screen.ChangePassword.route) {
