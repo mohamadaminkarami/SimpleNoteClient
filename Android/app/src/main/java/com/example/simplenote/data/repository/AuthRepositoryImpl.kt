@@ -17,16 +17,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val userDao: UserDao
 ) : AuthRepository {
     
-    override suspend fun login(email: String, password: String): AuthResult {
+    override suspend fun login(username: String, password: String): AuthResult {
         return try {
-            val response = authApiService.login(LoginRequest(email, password))
+            val response = authApiService.login(LoginRequest(username, password))
             
             if (response.isSuccessful) {
                 val tokenResponse = response.body()
                 if (tokenResponse != null) {
                     // Save tokens
                     authPreferences.saveTokens(tokenResponse.access, tokenResponse.refresh)
-                    authPreferences.saveUsername(email)
+                    authPreferences.saveUsername(username)
                     
                     // Fetch and save user info
                     fetchAndSaveUserInfo()
@@ -37,7 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
                 }
             } else {
                 val errorMessage = when (response.code()) {
-                    401 -> "Invalid email or password"
+                    401 -> "Invalid username or password"
                     422 -> "Invalid input data"
                     else -> "Login failed: ${response.message()}"
                 }

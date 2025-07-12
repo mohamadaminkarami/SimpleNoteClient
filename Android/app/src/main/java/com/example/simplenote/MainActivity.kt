@@ -164,7 +164,7 @@ fun SimpleNoteApp(
         }
         
         composable(
-            route = Screen.NoteEditor.route,
+           route = Screen.NoteEditor.route,
             arguments = listOf(
                 navArgument("noteId") { 
                     type = NavType.IntType

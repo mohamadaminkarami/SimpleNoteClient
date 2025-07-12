@@ -104,13 +104,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Email Address Field
+        // Username Field
         OutlinedTextField(
-            value = state.email,
-            onValueChange = { viewModel.onEvent(AuthEvent.EmailChanged(it)) },
+            value = state.username,
+            onValueChange = { viewModel.onEvent(AuthEvent.UsernameChanged(it)) },
             label = {
                 Text(
-                    text = "Email Address",
+                    text = "Username",
                     style = androidx.compose.ui.text.TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium, // 500
@@ -122,7 +122,7 @@ fun LoginScreen(
             },
             placeholder = {
                 Text(
-                    text = "Example: johndoe@gmail.com",
+                    text = "Example: johndoe",
                     style = androidx.compose.ui.text.TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal, // 400
@@ -137,7 +137,7 @@ fun LoginScreen(
             enabled = !state.isLoading,
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
+                keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
