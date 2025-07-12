@@ -25,14 +25,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.simplenote.R
+import com.example.simplenote.presentation.viewmodel.SettingsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     onChangePassword: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserInfo()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,22 +104,33 @@ fun SettingsScreen(
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(
-                    text = "Taha Hamifar",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with mail icon if available
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+                if (uiState.isLoading) {
+                    Text("Loading...", style = MaterialTheme.typography.bodyMedium)
+                } else if (uiState.error != null) {
+                    Text("Error loading user info", color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+                } else {
+                    val fullName =
+                        listOfNotNull(uiState.user?.firstName, uiState.user?.lastName)
+                            .filter { it.isNotBlank() }
+                            .joinToString(" ")
+                            .ifBlank { uiState.user?.username ?: "-" }
                     Text(
-                        text = "hamifar.taha@gmail.com",
-                        style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                        text = fullName,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground), // Replace with mail icon if available
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = uiState.user?.email ?: "-",
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                        )
+                    }
                 }
             }
         }
