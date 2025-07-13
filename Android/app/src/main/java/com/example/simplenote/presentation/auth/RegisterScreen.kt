@@ -27,6 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.simplenote.presentation.viewmodel.AuthEvent
+import com.example.simplenote.presentation.viewmodel.AuthUiEvent
+import com.example.simplenote.presentation.viewmodel.AuthViewModel
 import com.example.simplenote.ui.theme.LoginPlaceholder
 import com.example.simplenote.ui.theme.LoginTextPrimary
 import com.example.simplenote.ui.theme.LoginTextSecondary

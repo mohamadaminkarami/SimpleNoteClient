@@ -1,4 +1,4 @@
-package com.example.simplenote.presentation.notes
+package com.example.simplenote.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ class NotesViewModel @Inject constructor(
     var state by mutableStateOf(NotesState())
         private set
     
-    private val _uiState = kotlinx.coroutines.flow.MutableStateFlow(NotesState())
+    private val _uiState = MutableStateFlow(NotesState())
     val uiState = _uiState.asStateFlow()
     
     private val _uiEvent = MutableSharedFlow<NotesUiEvent>()

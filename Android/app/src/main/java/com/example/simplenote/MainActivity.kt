@@ -4,9 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -17,14 +26,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.simplenote.presentation.MainViewModel
 import com.example.simplenote.presentation.auth.LoginScreen
 import com.example.simplenote.presentation.auth.RegisterScreen
 import com.example.simplenote.presentation.navigation.Screen
-import com.example.simplenote.presentation.notes.NotesListScreen
 import com.example.simplenote.presentation.notes.NoteDetailScreen
+import com.example.simplenote.presentation.notes.NotesListScreen
 import com.example.simplenote.presentation.onboarding.OnboardingScreen
-import com.example.simplenote.data.preferences.PreferencesManager
+import com.example.simplenote.presentation.viewmodel.MainViewModel
 import com.example.simplenote.ui.theme.SimpleNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -143,6 +151,9 @@ fun SimpleNoteApp(
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
         }
@@ -164,7 +175,7 @@ fun SimpleNoteApp(
         }
         
         composable(
-            route = Screen.NoteEditor.route,
+           route = Screen.NoteEditor.route,
             arguments = listOf(
                 navArgument("noteId") { 
                     type = NavType.IntType
@@ -211,6 +222,24 @@ fun SimpleNoteApp(
                     Text("Logout")
                 }
             }
+        }
+
+        composable(Screen.Settings.route) {
+            com.example.simplenote.presentation.notes.SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onChangePassword = { navController.navigate(Screen.ChangePassword.route) },
+                onLogout = {
+                    viewModel.logout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.NotesList.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.ChangePassword.route) {
+            com.example.simplenote.presentation.notes.ChangePasswordScreen(
+                onBack = { navController.popBackStack() },
+            )
         }
     }
 }

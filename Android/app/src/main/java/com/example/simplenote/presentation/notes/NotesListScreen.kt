@@ -1,31 +1,32 @@
 package com.example.simplenote.presentation.notes
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.simplenote.presentation.notes.components.NoteCard
+import androidx.compose.ui.res.painterResource
+import com.example.simplenote.R
+import com.example.simplenote.presentation.viewmodel.NotesEvent
+import com.example.simplenote.presentation.viewmodel.NotesUiEvent
+import com.example.simplenote.presentation.viewmodel.NotesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,7 @@ fun NotesListScreen(
     onNavigateToNoteDetail: (Int) -> Unit,
     onNavigateToNoteEditor: (Int?) -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -75,39 +77,27 @@ fun NotesListScreen(
                         )
                     )
                 },
-                actions = {
-                    IconButton(
-                        onClick = onNavigateToProfile,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .shadow(2.dp, CircleShape)
-                    ) {
-                        Card(
-                            shape = CircleShape,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        ) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Profile",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        floatingActionButton = {
-            if (!state.isLoading) {
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp, top = 4.dp, start = 24.dp, end = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { /* TODO: Home action */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Home",
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
                 FloatingActionButton(
                     onClick = { onNavigateToNoteEditor(null) },
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -117,7 +107,15 @@ fun NotesListScreen(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add note",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(onClick = onNavigateToSettings) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -129,54 +127,8 @@ fun NotesListScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Search Bar
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { viewModel.onEvent(NotesEvent.SearchQueryChanged(it)) },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { 
-                    Text(
-                        "Search notes...",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                trailingIcon = {
-                    if (state.searchQuery.isNotEmpty()) {
-                        IconButton(
-                            onClick = { viewModel.onEvent(NotesEvent.ClearSearchQuery) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear search",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                ),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = { focusManager.clearFocus() }
-                )
-            )
-            
+            // Spacer(modifier = Modifier.height(16.dp))
             Spacer(modifier = Modifier.height(24.dp))
-            
-            // Content Area
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -223,62 +175,58 @@ fun NotesListScreen(
                     }
                     
                     state.notes.isEmpty() -> {
-                        // Empty State
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = "No notes yet",
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
+                            // Illustration
+                            Image(
+                                painter = painterResource(id = R.drawable.illustration),
+                                contentDescription = "Start your journey illustration",
+                                modifier = Modifier.size(180.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(32.dp))
+                            // Title
                             Text(
-                                text = "Create your first note to get started",
+                                text = "Start Your Journey",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            // Subtitle
+                            Text(
+                                text = "Every big step start with small step.\nNotes your first idea and start your journey!",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(modifier = Modifier.height(32.dp))
-                            Button(
-                                onClick = { onNavigateToNoteEditor(null) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Create Note")
-                            }
+                            Spacer(modifier = Modifier.height(48.dp))
+                            // Placeholder for curved arrow (optional)
                         }
                     }
                     
                     else -> {
-                        // Notes List
-                        LazyColumn(
+                        // Notes List as grid
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            contentPadding = PaddingValues(bottom = 80.dp) // Space for FAB
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
-                            items(
-                                items = state.notes,
-                                key = { it.id }
-                            ) { note ->
+                            items(state.notes, key = { it.id }) { note ->
                                 NoteCard(
                                     note = note,
                                     onNoteClick = onNavigateToNoteDetail,
                                     onEditClick = onNavigateToNoteEditor,
                                     onDeleteClick = { noteId ->
                                         viewModel.onEvent(NotesEvent.DeleteNote(noteId))
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .padding(4.dp)
                                 )
                             }
                         }

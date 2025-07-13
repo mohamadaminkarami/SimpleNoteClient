@@ -1,5 +1,6 @@
-package com.example.simplenote.presentation.auth
+package com.example.simplenote.presentation.viewmodel
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -64,11 +65,9 @@ class AuthViewModel @Inject constructor(
     
     private fun login() {
         if (!validateLoginInput()) return
-        
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
-            
-            when (val result = authRepository.login(state.email, state.password)) {
+            when (val result = authRepository.login(state.username, state.password)) {
                 is AuthResult.Success -> {
                     state = state.copy(isLoading = false)
                     _uiEvent.emit(AuthUiEvent.LoginSuccess)
@@ -111,12 +110,8 @@ class AuthViewModel @Inject constructor(
     }
     
     private fun validateLoginInput(): Boolean {
-        if (state.email.isBlank()) {
-            state = state.copy(error = "Email cannot be empty")
-            return false
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            state = state.copy(error = "Invalid email format")
+        if (state.username.isBlank()) {
+            state = state.copy(error = "Username cannot be empty")
             return false
         }
         if (state.password.isBlank()) {
@@ -143,7 +138,7 @@ class AuthViewModel @Inject constructor(
             state = state.copy(error = "Email cannot be empty")
             return false
         }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
             state = state.copy(error = "Invalid email format")
             return false
         }

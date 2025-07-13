@@ -13,16 +13,15 @@ class AuthInterceptor @Inject constructor(
     
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        
-        // Don't add token to auth endpoints
-        if (originalRequest.url.encodedPath.contains("/auth/")) {
+        val path = originalRequest.url.encodedPath
+        val skipAuth = path.contains("/auth/token/") ||
+                       path.contains("/auth/register/")
+        if (skipAuth) {
             return chain.proceed(originalRequest)
         }
-        
         val accessToken = runBlocking {
             authPreferences.accessToken.first()
         }
-        
         val authenticatedRequest = if (accessToken != null) {
             originalRequest.newBuilder()
                 .header("Authorization", "Bearer $accessToken")
@@ -30,7 +29,6 @@ class AuthInterceptor @Inject constructor(
         } else {
             originalRequest
         }
-        
         return chain.proceed(authenticatedRequest)
     }
 } 
