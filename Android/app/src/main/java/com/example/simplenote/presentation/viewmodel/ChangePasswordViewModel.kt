@@ -48,9 +48,9 @@ class ChangePasswordViewModel @Inject constructor(
                     val errorMsg = response.errorBody()?.string() ?: "Unknown error"
                     _uiState.value = ChangePasswordUiState(error = errorMsg)
                 }
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 _uiState.value = ChangePasswordUiState(error = "Network error. Please try again.")
-            } catch (e: HttpException) {
+            } catch (_: HttpException) {
                 _uiState.value = ChangePasswordUiState(error = "Server error. Please try again.")
             } catch (e: Exception) {
                 _uiState.value = ChangePasswordUiState(error = e.localizedMessage ?: "Unknown error")

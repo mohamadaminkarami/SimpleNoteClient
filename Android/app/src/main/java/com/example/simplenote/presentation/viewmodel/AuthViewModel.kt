@@ -1,5 +1,6 @@
-package com.example.simplenote.presentation.auth
+package com.example.simplenote.presentation.viewmodel
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -137,7 +138,7 @@ class AuthViewModel @Inject constructor(
             state = state.copy(error = "Email cannot be empty")
             return false
         }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
             state = state.copy(error = "Invalid email format")
             return false
         }

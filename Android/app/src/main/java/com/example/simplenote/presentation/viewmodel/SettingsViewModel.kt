@@ -29,9 +29,9 @@ class SettingsViewModel @Inject constructor(
                 } else {
                     _uiState.value = SettingsUiState(error = "Failed to load user info.", isLoading = false)
                 }
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 _uiState.value = SettingsUiState(error = "Network error.", isLoading = false)
-            } catch (e: HttpException) {
+            } catch (_: HttpException) {
                 _uiState.value = SettingsUiState(error = "Server error.", isLoading = false)
             } catch (e: Exception) {
                 _uiState.value = SettingsUiState(error = e.localizedMessage ?: "Unknown error", isLoading = false)

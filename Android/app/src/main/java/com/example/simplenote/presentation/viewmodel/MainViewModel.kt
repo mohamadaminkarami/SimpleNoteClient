@@ -1,4 +1,4 @@
-package com.example.simplenote.presentation
+package com.example.simplenote.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
