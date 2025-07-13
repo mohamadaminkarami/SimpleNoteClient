@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplenote.domain.repository.AuthRepository
+import com.example.simplenote.data.network.TokenManager
 import com.example.simplenote.util.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
     
     var state by mutableStateOf(AuthState())
@@ -59,6 +61,9 @@ class AuthViewModel @Inject constructor(
             }
             is AuthEvent.ClearError -> {
                 state = state.copy(error = null)
+            }
+            is AuthEvent.RefreshToken -> {
+                refreshToken()
             }
         }
     }
@@ -156,6 +161,28 @@ class AuthViewModel @Inject constructor(
         }
         return true
     }
+    
+    private fun refreshToken() {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true, error = null)
+            when (val result = authRepository.refreshToken()) {
+                is AuthResult.Success -> {
+                    state = state.copy(isLoading = false)
+                    _uiEvent.emit(AuthUiEvent.TokenRefreshed)
+                }
+                is AuthResult.Error -> {
+                    state = state.copy(
+                        isLoading = false,
+                        error = result.message
+                    )
+                    _uiEvent.emit(AuthUiEvent.TokenRefreshFailed)
+                }
+                is AuthResult.Loading -> {
+                    // Already handled above
+                }
+            }
+        }
+    }
 }
 
 data class AuthState(
@@ -183,9 +210,12 @@ sealed class AuthEvent {
     data object TogglePasswordVisibility : AuthEvent()
     data object ToggleConfirmPasswordVisibility : AuthEvent()
     data object ClearError : AuthEvent()
+    data object RefreshToken : AuthEvent()
 }
 
 sealed class AuthUiEvent {
     data object LoginSuccess : AuthUiEvent()
     data object RegisterSuccess : AuthUiEvent()
+    data object TokenRefreshed : AuthUiEvent()
+    data object TokenRefreshFailed : AuthUiEvent()
 } 

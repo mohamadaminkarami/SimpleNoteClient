@@ -16,17 +16,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    
-    // For Android emulator: 10.0.2.2 maps to host machine's localhost
-    // For physical device: use your machine's IP address (e.g., "http://192.168.1.100:8000/api/")
     private const val BASE_URL = "http://10.0.2.2:8000/api/"
-    
+
     @Provides
     @Singleton
     fun provideJson(): Json {
@@ -35,19 +33,13 @@ object NetworkModule {
             coerceInputValues = true
         }
     }
-    
+
     @Provides
     @Singleton
     fun provideAuthPreferences(@ApplicationContext context: Context): AuthPreferences {
         return AuthPreferences(context)
     }
-    
-    @Provides
-    @Singleton
-    fun provideAuthInterceptor(authPreferences: AuthPreferences): AuthInterceptor {
-        return AuthInterceptor(authPreferences)
-    }
-    
+
     @Provides
     @Singleton
     fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
@@ -63,7 +55,23 @@ object NetworkModule {
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
-    
+
+    @Provides
+    @Singleton
+    @Named("refresh")
+    fun provideRefreshOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            )
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
+
     @Provides
     @Singleton
     fun provideRetrofit(
@@ -78,13 +86,36 @@ object NetworkModule {
             )
             .build()
     }
-    
+
+    @Provides
+    @Singleton
+    @Named("refresh")
+    fun provideRefreshRetrofit(
+        @Named("refresh") refreshOkHttpClient: OkHttpClient,
+        json: Json
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(refreshOkHttpClient)
+            .addConverterFactory(
+                json.asConverterFactory("application/json".toMediaType())
+            )
+            .build()
+    }
+
     @Provides
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
     }
-    
+
+    @Provides
+    @Singleton
+    @Named("refresh")
+    fun provideRefreshAuthApiService(@Named("refresh") retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
+    }
+
     @Provides
     @Singleton
     fun provideNotesApiService(retrofit: Retrofit): NotesApiService {

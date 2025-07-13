@@ -3,6 +3,7 @@ package com.example.simplenote.data.repository
 import com.example.simplenote.data.local.UserDao
 import com.example.simplenote.data.model.*
 import com.example.simplenote.data.network.AuthApiService
+import com.example.simplenote.data.network.AuthRemoteDataSource
 import com.example.simplenote.data.preferences.AuthPreferences
 import com.example.simplenote.domain.repository.AuthRepository
 import com.example.simplenote.util.AuthResult
@@ -14,7 +15,8 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService,
     private val authPreferences: AuthPreferences,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) : AuthRepository {
     
     override suspend fun login(username: String, password: String): AuthResult {
@@ -24,8 +26,8 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val tokenResponse = response.body()
                 if (tokenResponse != null) {
-                    // Save tokens
-                    authPreferences.saveTokens(tokenResponse.access, tokenResponse.refresh)
+                    // Save tokens with expiry (assuming 1 hour expiry if not provided)
+                    authPreferences.saveTokens(tokenResponse.access, tokenResponse.refresh, 3600L)
                     authPreferences.saveUsername(username)
                     
                     // Fetch and save user info
@@ -76,24 +78,11 @@ class AuthRepositoryImpl @Inject constructor(
     
     override suspend fun refreshToken(): AuthResult {
         return try {
-            val refreshToken = authPreferences.refreshToken.first()
-            if (refreshToken != null) {
-                val response = authApiService.refreshToken(RefreshTokenRequest(refreshToken))
-                
-                if (response.isSuccessful) {
-                    val refreshResponse = response.body()
-                    if (refreshResponse != null) {
-                        // Update only access token, keep refresh token
-                        authPreferences.saveTokens(refreshResponse.access, refreshToken)
-                        AuthResult.Success
-                    } else {
-                        AuthResult.Error("Token refresh failed: Empty response")
-                    }
-                } else {
-                    AuthResult.Error("Token refresh failed: ${response.message()}")
-                }
+            val success = authRemoteDataSource.refreshToken()
+            if (success) {
+                AuthResult.Success
             } else {
-                AuthResult.Error("No refresh token available")
+                AuthResult.Error("Token refresh failed")
             }
         } catch (e: Exception) {
             AuthResult.Error("Token refresh failed: ${e.localizedMessage}")

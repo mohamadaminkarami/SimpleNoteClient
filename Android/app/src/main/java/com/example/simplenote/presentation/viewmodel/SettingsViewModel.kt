@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplenote.data.model.User
 import com.example.simplenote.data.network.AuthApiService
+import com.example.simplenote.domain.repository.AuthRepository
+import com.example.simplenote.util.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val authApiService: AuthApiService
+    private val authApiService: AuthApiService,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState
@@ -38,10 +41,31 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+    
+    fun refreshToken() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isRefreshingToken = true, error = null)
+            when (val result = authRepository.refreshToken()) {
+                is AuthResult.Success -> {
+                    _uiState.value = _uiState.value.copy(isRefreshingToken = false)
+                }
+                is AuthResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        isRefreshingToken = false,
+                        error = result.message
+                    )
+                }
+                is AuthResult.Loading -> {
+                    // Already handled above
+                }
+            }
+        }
+    }
 }
 
 data class SettingsUiState(
     val user: User? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isRefreshingToken: Boolean = false
 ) 

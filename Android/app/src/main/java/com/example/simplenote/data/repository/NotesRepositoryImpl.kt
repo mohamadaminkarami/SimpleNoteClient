@@ -4,6 +4,7 @@ import com.example.simplenote.data.local.NoteDao
 import com.example.simplenote.data.model.Note
 import com.example.simplenote.data.model.NoteRequest
 import com.example.simplenote.data.network.NotesApiService
+import com.example.simplenote.data.network.TokenManager
 import com.example.simplenote.domain.repository.NotesRepository
 import com.example.simplenote.util.NoteResult
 import com.example.simplenote.util.Resource
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 class NotesRepositoryImpl @Inject constructor(
     private val notesApiService: NotesApiService,
-    private val noteDao: NoteDao
+    private val noteDao: NoteDao,
+    private val tokenManager: TokenManager
 ) : NotesRepository {
     
     override fun getAllNotes(): Flow<List<Note>> {
@@ -143,6 +145,11 @@ class NotesRepositoryImpl @Inject constructor(
     
     override suspend fun refreshNotes(): Resource<Unit> {
         return try {
+            // Ensure we have a valid token before making the request
+            if (!tokenManager.ensureValidToken()) {
+                return Resource.Error("Authentication failed")
+            }
+            
             val response = notesApiService.getNotes()
             
             if (response.isSuccessful) {
@@ -164,6 +171,7 @@ class NotesRepositoryImpl @Inject constructor(
     }
     
     private fun getCurrentTimestamp(): String {
-        return java.time.LocalDateTime.now().toString()
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault())
+        return dateFormat.format(java.util.Date())
     }
 } 

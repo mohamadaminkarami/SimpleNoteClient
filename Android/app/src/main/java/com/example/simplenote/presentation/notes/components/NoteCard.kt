@@ -17,8 +17,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.simplenote.data.model.Note
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,9 +206,10 @@ fun NoteCard(
 
 private fun formatDate(dateString: String): String {
     return try {
-        val dateTime = LocalDateTime.parse(dateString.substringBefore('.'))
-        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-        "Updated ${dateTime.format(formatter)}"
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val date = inputFormat.parse(dateString.substringBefore('.'))
+        date?.let { "Updated ${outputFormat.format(it)}" } ?: "Updated recently"
     } catch (e: Exception) {
         "Updated recently"
     }

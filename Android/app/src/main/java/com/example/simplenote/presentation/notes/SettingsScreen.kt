@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.simplenote.R
 import com.example.simplenote.presentation.viewmodel.SettingsViewModel
+import com.example.simplenote.util.ToastUtil
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,10 +39,27 @@ fun SettingsScreen(
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     var showLogoutDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.fetchUserInfo()
+    }
+    
+    // Handle token refresh events
+    LaunchedEffect(uiState.isRefreshingToken) {
+        if (!uiState.isRefreshingToken && uiState.error == null) {
+            // Token refresh completed successfully
+            ToastUtil.showShort(context, "Token refreshed successfully")
+        }
+    }
+    
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { error ->
+            if (error.contains("Token") || error.contains("refresh")) {
+                ToastUtil.showShort(context, "Token refresh failed: $error")
+            }
+        }
     }
     Column(
         modifier = Modifier
@@ -172,6 +191,36 @@ fun SettingsScreen(
                 contentDescription = null,
                 tint = Color.Gray
             )
+        }
+
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+
+        // Refresh Token
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { viewModel.refreshToken() }
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null,
+                tint = Color(0xFF6366F1)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Refresh Token",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (uiState.isRefreshingToken) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = Color(0xFF6366F1)
+                )
+            }
         }
 
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)

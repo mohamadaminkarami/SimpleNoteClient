@@ -75,6 +75,14 @@ fun LoginScreen(
                 is AuthUiEvent.RegisterSuccess -> {
                     // Not applicable for login screen
                 }
+                
+                is AuthUiEvent.TokenRefreshed -> {
+                    // Handle token refresh success
+                }
+                
+                is AuthUiEvent.TokenRefreshFailed -> {
+                    // Handle token refresh failure
+                }
             }
         }
     }

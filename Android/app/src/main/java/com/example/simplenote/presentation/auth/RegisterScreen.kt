@@ -55,6 +55,12 @@ fun RegisterScreen(
                 }
                 // Not applicable for register screen
                 is AuthUiEvent.LoginSuccess -> {}
+                is AuthUiEvent.TokenRefreshed -> {
+                    // Handle token refresh success
+                }
+                is AuthUiEvent.TokenRefreshFailed -> {
+                    // Handle token refresh failure
+                }
             }
         }
     }

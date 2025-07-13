@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplenote.domain.repository.AuthRepository
 import com.example.simplenote.data.preferences.PreferencesManager
+import com.example.simplenote.data.network.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
     
     var state by mutableStateOf(MainState())
@@ -32,6 +34,13 @@ class MainViewModel @Inject constructor(
                     isLoggedIn = isLoggedIn,
                     isLoading = false
                 )
+                
+                // Start or stop token monitoring based on login status
+                if (isLoggedIn) {
+                    tokenManager.startTokenRefreshMonitoring()
+                } else {
+                    tokenManager.stopTokenRefreshMonitoring()
+                }
             }
         }
     }
@@ -51,6 +60,7 @@ class MainViewModel @Inject constructor(
     
     fun logout() {
         viewModelScope.launch {
+            tokenManager.stopTokenRefreshMonitoring()
             authRepository.logout()
         }
     }
