@@ -3,6 +3,7 @@ package com.example.simplenote.presentation.notes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -31,11 +32,12 @@ fun NoteDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val note = if (noteId == null) null else uiState.notes.find { it.id == noteId.toIntOrNull() }
-    
+
     var isEditing by remember { mutableStateOf(false) }
     var editedTitle by remember { mutableStateOf("") }
     var editedDescription by remember { mutableStateOf("") }
-    
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     // Initialize edit fields when note is loaded
     LaunchedEffect(note) {
         if (note != null) {
@@ -48,7 +50,7 @@ fun NoteDetailScreen(
             isEditing = true
         }
     }
-    
+
     // Handle save
     fun saveNote() {
         if (note != null) {
@@ -65,7 +67,7 @@ fun NoteDetailScreen(
         }
         isEditing = false
     }
-    
+
     // Handle delete
     fun deleteNote() {
         if (note != null) {
@@ -73,7 +75,7 @@ fun NoteDetailScreen(
             onNavigateBack()
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -115,9 +117,9 @@ fun NoteDetailScreen(
                     tint = Color(0xFFFFB74D),
                     modifier = Modifier.size(24.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.width(8.dp))
-                
+
                 if (isEditing) {
                     TextField(
                         value = editedTitle,
@@ -142,16 +144,16 @@ fun NoteDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .then(
-                                if (note != null) Modifier.clickable { 
-                                    isEditing = true 
+                                if (note != null) Modifier.clickable {
+                                    isEditing = true
                                 } else Modifier
                             )
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Description/Content
             if (isEditing) {
                 TextField(
@@ -187,9 +189,9 @@ fun NoteDetailScreen(
                         .defaultMinSize(minHeight = 200.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.weight(1f))
-            
+
             // Bottom section with last edited and delete
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -209,10 +211,10 @@ fun NoteDetailScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 if (note != null) {
                     IconButton(
-                        onClick = { deleteNote() }
+                        onClick = { showDeleteDialog = true }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -221,6 +223,38 @@ fun NoteDetailScreen(
                         )
                     }
                 }
+            }
+            // Confirmation dialog for delete
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showDeleteDialog = false
+                                deleteNote()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Delete Note", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text("Cancel")
+                        }
+                    },
+                    title = {
+                        Text("Want to Delete this Note?", fontWeight = FontWeight.Bold)
+                    },
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(20.dp)
+                )
             }
         }
     }
